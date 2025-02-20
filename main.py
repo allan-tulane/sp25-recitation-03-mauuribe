@@ -50,25 +50,22 @@ def quadratic_multiply(x, y):
 
 def _quadratic_multiply(x, y):
     ### TODO
-    if len(x.binary_vec) == 1 or len(y.binary_vec) == 1:
-        return binary2int(x.binary_vec + y.binary_vec)
+    xvec= x.binary_vec
+    yvec = y.binary_vec
+    xvec, yvec = pad(xvec, yvec)
 
-    x_padded, y_padded = pad(x.binary_vec, y.binary_vec)
+    f x.decimal_val <= 1 and y.decimal_val <=1:
+        return BinaryNumber(x.decimal_val * y.decimal_val)
 
-    x_left, x_right = split_number(x_padded.binary_vec)
-    y_left, y_right = split_number(y_padded.binary_vec)
-
-    z2 = _quadratic_multiply(x_left, y_left)  
-    z1 = _quadratic_multiply(x_left, y_right) 
-    z0 = _quadratic_multiply(x_right, y_left) 
-    z0_and_z1 = _quadratic_multiply(x_right, y_right)
-
-    z2 = bit_shift(z2, len(x_left) * 2)
-    z1 = bit_shift(z1, len(x_left))
-    z0 = bit_shift(z0, len(x_right))
-
-    result = z2.decimal_val + z1.decimal_val + z0.decimal_val
-    return binary2int(list(bin(result)[2:]))
+    x_left, x_right = split_number(xvec)
+    y_left, y_right = split_number(yvec)
+    left = bit_shift(_quadratic_multiply(x_left, y_left), len(xvec)).decimal_val
+    middle1 = _quadratic_multiply(x_left, y_right).decimal_val
+    middle2 = _quadratic_multiply(x_right, y_left).decimal_val
+    middle = bit_shift(BinaryNumber(middle1 + middle2), len(xvec) // 2).decimal_val
+    right = _quadratic_multiply(x_right, y_right).decimal_val
+    result = BinaryNumber(left + middle + right)
+    return result
     ###
 
 
